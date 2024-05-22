@@ -14,7 +14,7 @@ const BackdropComponent = ({
 }): JSX.Element => {
   return (
     <Box>
-      <Backdrop {...config} sx={{ color: customProps?.color ?? '#ffffff', zIndex: 1000 }}>
+      <Backdrop role='none' {...config} sx={{ color: customProps?.color ?? '#ffffff', zIndex: 1000 }}>
         {(customProps?.hasSpinner && <SpinnerComponent />) || children}
       </Backdrop>
     </Box>

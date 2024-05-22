@@ -9,13 +9,24 @@ import ButtonComponent from '@/components/atoms/Button'
 import ImageComponent from '@/components/atoms/Image'
 import { routes } from '@/constants'
 import SeparatorComponent from '@/components/atoms/Separator'
+import { IStyle } from '@/types'
 
-const SideBarComponent = ({ activeButton }: { activeButton: string }): JSX.Element => {
-  const buttons = [
-    { icon: StatsIcon, route: routes.dashboard },
-    { icon: HeartIcon, route: routes.favourites },
-    { icon: SettingsIcon, route: routes.settings }
-  ]
+const SideBarComponent = ({
+  activeButton,
+  buttons,
+  containerStyle
+}: {
+  activeButton: string
+  buttons?: { icon: string; route: string }[]
+  containerStyle?: IStyle
+}): JSX.Element => {
+  if (!buttons) {
+    buttons = [
+      { icon: StatsIcon, route: routes.dashboard },
+      { icon: HeartIcon, route: routes.favourites },
+      { icon: SettingsIcon, route: routes.settings }
+    ]
+  }
 
   const activeBtnStyle = {
     background: 'linear-gradient(#679cf6, #4072ee)',
@@ -35,6 +46,7 @@ const SideBarComponent = ({ activeButton }: { activeButton: string }): JSX.Eleme
         width: '5.63vw',
         height: '100vh',
         backgroundColor: '#454664',
+        ...(containerStyle ?? {}),
         ...flex('column')
       }}>
       <Stack width={'100%'} sx={{ ...flex('column') }}>
@@ -46,11 +58,11 @@ const SideBarComponent = ({ activeButton }: { activeButton: string }): JSX.Eleme
               customProps={{
                 type: 'link',
                 linkTo: route,
-                params: { activeButton: index },
                 customContainerStyle: activeButton === route ? activeBtnStyle : {}
               }}>
               <ImageComponent
                 customProps={{
+                  alt: 'Side bar icon',
                   src: icon,
                   width: 24,
                   height: 24

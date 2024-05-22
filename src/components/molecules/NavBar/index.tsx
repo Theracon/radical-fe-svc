@@ -8,6 +8,7 @@ import { flex } from '@/utils/display'
 const NavBarComponent = (): JSX.Element => {
   return (
     <Box
+      role='menubar'
       zIndex={100}
       position='absolute'
       sx={{

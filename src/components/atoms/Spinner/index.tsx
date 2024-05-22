@@ -1,7 +1,7 @@
 import { CircularProgress } from '@mui/material'
 
 const SpinnerComponent = (): JSX.Element => {
-  return <CircularProgress color='inherit' />
+  return <CircularProgress role='status' color='inherit' />
 }
 
 SpinnerComponent.displayName = 'SpinnerComponent'

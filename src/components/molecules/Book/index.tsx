@@ -31,7 +31,7 @@ const BookComponent = ({
     <Box p={2} sx={{ width: '100%', height: '5', backgroundColor: '#ffffff' }}>
       <Grid container spacing={1} sx={{ ...flex() }}>
         <Grid item xs={0.5}>
-          <ImageComponent customProps={{ src: BookIcon, width: '20px', height: '20px' }} />
+          <ImageComponent customProps={{ alt: 'Book Icon', src: BookIcon, width: '20px', height: '20px' }} />
         </Grid>
         <Grid item xs={variant === 'favourites' ? 5.5 : 7.5}>
           <Typography gap={0.5} sx={{ ...flex('row', 'flex-start') }}>

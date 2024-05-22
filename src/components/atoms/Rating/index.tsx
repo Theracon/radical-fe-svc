@@ -11,6 +11,7 @@ const RatingComponent = ({
   return (
     <Box>
       <Rating
+        role='checkbox'
         name='book-rating'
         {...(config || {})}
         onChange={(_, value) => {
