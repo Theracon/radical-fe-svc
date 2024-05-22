@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
+:root {
+  width: 100vw;
+  height: 100vh;
+  background-color: #e9edf6;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Lato, sans-serif !important;
+  color: #5b5b5b;
+}
+
+div,
+input,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+pre {
+  font-family: Lato, sans-serif !important;
+}
+
+button,
+a,
+input[type='checkbox'] {
+  cursor: pointer !important;
+}
+
+input::placeholder {
+  font-size: 16px;
+  font-family: Lato, sans-serif;
+}
+
+.button__link {
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  color: #454664 !important;
+}
+
+.button__link:hover {
+  text-decoration: underline !important;
+  text-decoration-thickness: 2px;
+  text-decoration-color: #000000;
+}
