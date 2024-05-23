@@ -1,0 +1,25 @@
+# fly.toml app configuration file generated for radical-fe-svc on 2024-05-23T10:06:37+01:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'radical-fe-svc'
+primary_region = 'ams'
+
+[build]
+
+[http_service]
+  internal_port = 80
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[env]
+  VITE_API_BASE_URL = 'https://radical-be-svc.fly.dev/api/v1'
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
