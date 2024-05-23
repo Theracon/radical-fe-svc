@@ -97,7 +97,11 @@ export const usePagination = (dataType?: 'favourites') => {
   }, [favouriteList])
 
   useEffect(() => {
-    handleFetchFavouritesByPage(allBooks, currentPage)
+    if (dataType === 'favourites') {
+      handleFetchFavouritesByPage(allBooks, currentPage)
+    } else {
+      handleFetchBooksByPage(dataList, currentPage)
+    }
   }, [currentPage])
 
   return {
