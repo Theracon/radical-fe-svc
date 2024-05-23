@@ -11,7 +11,7 @@ export const usePagination = (dataType?: 'favourites') => {
 
   const dataList: Book[] | IFavourite[] = dataType === 'favourites' ? favouriteList : bookList
 
-  const [allBooks, setAllBooks] = useState<Book[] | IFavourite[]>(dataList)
+  const [allBooks, setAllBooks] = useState<Book[] | IFavourite[]>([])
   const [data, setData] = useState<Book[] | IFavourite[]>([])
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [totalPages, setTotalPages] = useState<number>(0)
@@ -22,7 +22,10 @@ export const usePagination = (dataType?: 'favourites') => {
     setCurrentPage(value)
   }
 
-  const fetchBooks = (list = allBooks, pageNumber: number | undefined = currentPage) => {
+  const handleFetchBooksByPage = (
+    list: Book[] | IFavourite[] = dataList,
+    pageNumber: number | undefined = currentPage
+  ) => {
     const offset = LIMIT * (pageNumber - 1)
     const endIndex = offset + LIMIT
     let data: Book[] | IFavourite[]
@@ -34,9 +37,27 @@ export const usePagination = (dataType?: 'favourites') => {
     }
 
     const numPages = Math.ceil(list.length / LIMIT)
-
-    setTotalPages(numPages)
     setData(data)
+    setTotalPages(numPages)
+  }
+
+  const handleFetchFavouritesByPage = (
+    list: Book[] | IFavourite[] = allBooks,
+    pageNumber: number | undefined = currentPage
+  ) => {
+    const offset = LIMIT * (pageNumber - 1)
+    const endIndex = offset + LIMIT
+    let data: Book[] | IFavourite[]
+
+    if (list.length <= endIndex) {
+      data = list.slice(offset)
+    } else {
+      data = list.slice(offset, endIndex)
+    }
+
+    const numPages = Math.ceil(list.length / LIMIT)
+    setData(data)
+    setTotalPages(numPages)
   }
 
   const handleSearchByAuthorOrTitle = (query: string) => {
@@ -44,31 +65,39 @@ export const usePagination = (dataType?: 'favourites') => {
 
     if (searchQuery === '') {
       setAllBooks(dataList)
-      fetchBooks(dataList)
+      handleFetchFavouritesByPage(dataList)
     }
 
     searchQuery = searchQuery.trim().toLowerCase()
-
     const books = dataList.filter(
       (book) => book.author?.toLowerCase().includes(searchQuery) || book.title?.toLowerCase().includes(searchQuery)
     )
-
     setAllBooks(books)
-    fetchBooks()
+    handleFetchFavouritesByPage()
   }
 
   useEffect(() => {
     const count = dataType === 'favourites' ? favouriteList.length : bookList.length
     const totalPages = Math.ceil(count / LIMIT)
 
-    fetchBooks()
+    handleFetchFavouritesByPage()
     setTotalCount(totalCount)
     setTotalPages(totalPages)
     setCurrentPage(1)
   }, [])
 
   useEffect(() => {
-    fetchBooks(allBooks, currentPage)
+    handleFetchBooksByPage()
+  }, [bookList])
+
+  useEffect(() => {
+    const dataList: Book[] | IFavourite[] = dataType === 'favourites' ? favouriteList : bookList
+    setAllBooks(dataList)
+    handleFetchFavouritesByPage()
+  }, [favouriteList])
+
+  useEffect(() => {
+    handleFetchFavouritesByPage(allBooks, currentPage)
   }, [currentPage])
 
   return {
@@ -78,6 +107,6 @@ export const usePagination = (dataType?: 'favourites') => {
     handleSearchByAuthorOrTitle,
     totalCount,
     totalPages,
-    fetchBooks
+    setAllBooks
   }
 }

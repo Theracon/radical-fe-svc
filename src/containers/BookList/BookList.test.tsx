@@ -1,6 +1,9 @@
+// @ts-nocheck
+import { Provider } from 'react-redux'
 import { render, screen } from '@testing-library/react'
 
 import BookList from '.'
+import { store } from '@/store'
 
 test('renders component', () => {
   const bookList = [
@@ -16,7 +19,11 @@ test('renders component', () => {
     }
   ]
 
-  render(<BookList bookList={bookList} />)
+  render(
+    <Provider store={store}>
+      <BookList bookList={bookList} />
+    </Provider>
+  )
 
   const element = screen.getAllByAltText('Book Icon')[0]
   expect(element).toBeDefined()

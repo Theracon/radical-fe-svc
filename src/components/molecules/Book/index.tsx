@@ -28,17 +28,17 @@ const BookComponent = ({
   }
 
   return (
-    <Box p={2} sx={{ width: '100%', height: '5', backgroundColor: '#ffffff' }}>
-      <Grid container spacing={1} sx={{ ...flex() }}>
+    <Box p={2} sx={{ width: '100%', height: '5vh', backgroundColor: '#ffffff', ...flex() }}>
+      <Grid container spacing={1} sx={{ height: '100%', ...flex() }}>
         <Grid item xs={0.5}>
           <ImageComponent customProps={{ alt: 'Book Icon', src: BookIcon, width: '20px', height: '20px' }} />
         </Grid>
         <Grid item xs={variant === 'favourites' ? 5.5 : 7.5}>
           <Typography gap={0.5} sx={{ ...flex('row', 'flex-start') }}>
             <Typography variant='body2' textTransform='uppercase' sx={{ fontWeight: 700 }}>
-              {book.title}
+              {truncateString(book.title)}
             </Typography>
-            <Typography variant='body2'> by {truncateString(book?.author, 30)}</Typography>
+            <Typography variant='body2'> by {truncateString(book?.author)}</Typography>
           </Typography>
         </Grid>
         <Grid item xs={3} sx={{ ...flex(variant === 'favourites' ? 'row' : 'row-reverse') }}>

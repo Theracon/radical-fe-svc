@@ -1,8 +1,10 @@
 // @ts-nocheck
+import { Provider } from 'react-redux'
 import { render, screen } from '@testing-library/react'
 
 import DialogComponent from '.'
 import { CustomDialogConfig } from '@/types/dialog'
+import { store } from '@/store'
 
 test('renders component', () => {
   const config = { open: true }
@@ -12,7 +14,11 @@ test('renders component', () => {
     content: 'Sample dialog content'
   }
 
-  render(<DialogComponent config={config} customProps={customProps} />)
+  render(
+    <Provider store={store}>
+      <DialogComponent config={config} customProps={customProps} />
+    </Provider>
+  )
 
   const element = screen.getByText('Sample dialog content')
   expect(element).toBeDefined()

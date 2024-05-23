@@ -1,7 +1,6 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 import { Book, IFavourite } from '@/types/book'
-import { DUMMY_BOOK_LIST, DUMMY_FAVOURITES_LIST } from '@/constants'
 
 interface IBookState {
   bookList: Book[]
@@ -11,8 +10,8 @@ interface IBookState {
 }
 
 const initialState: IBookState = {
-  bookList: DUMMY_BOOK_LIST,
-  favouriteList: DUMMY_FAVOURITES_LIST,
+  bookList: [],
+  favouriteList: [],
   currentBook: {},
   pageNumber: 1
 }

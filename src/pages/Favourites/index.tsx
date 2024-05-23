@@ -32,6 +32,7 @@ const Favourites = (): JSX.Element => {
   const [tab, setTab] = useState<DISPLAY>('DEFAULT')
   const [showDialog, setShowDialog] = useState<boolean>(false)
   const [bookState, setBookState] = useState<IFavourite>(currentBook!)
+  const [searchBarValue, setSearchBarValue] = useState<string>('')
 
   const handleSwitchTabs = () => {
     setHeading((current) => (current === '' ? PAGE_HEADING : ''))
@@ -96,7 +97,7 @@ const Favourites = (): JSX.Element => {
   )
 
   const currentBookTab = (
-    <React.Fragment>
+    <Box sx={{ minHeight: '50vh' }}>
       <Box px={2}>
         <ImageComponent
           customProps={{
@@ -190,7 +191,7 @@ const Favourites = (): JSX.Element => {
           </Grid>
         </Grid>
       </FormComponent>
-    </React.Fragment>
+    </Box>
   )
 
   useLayoutEffect(() => {
@@ -207,6 +208,8 @@ const Favourites = (): JSX.Element => {
     <Layout
       pageHeading={heading}
       hasSearchBar={hasSearchBar}
+      searchBarValue={searchBarValue}
+      setSearchBarValue={setSearchBarValue}
       searchBarPrimaryAction={pagination.handleSearchByAuthorOrTitle}>
       <Box>{tab === 'DEFAULT' ? defaultTab : currentBookTab}</Box>
     </Layout>

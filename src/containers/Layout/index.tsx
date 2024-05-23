@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useLayoutEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Box, Grid, Stack, Typography } from '@mui/material'
 
@@ -12,15 +12,18 @@ const Layout = ({
   pageHeading = '',
   hasSearchBar = true,
   searchBarPrimaryAction,
+  searchBarValue,
+  setSearchBarValue,
   children
 }: {
   pageHeading?: JSX.Element | string
   hasSearchBar?: boolean
-  searchBarPrimaryAction?: (query: string) => void
+  searchBarValue: string
+  setSearchBarValue: Dispatch<SetStateAction<string>>
+  searchBarPrimaryAction?: (query: string) => any
   children?: JSX.Element | JSX.Element[]
 }): JSX.Element => {
   const [activeSidebarBtn, setActiveSidebarBtn] = useState<string>('')
-  const [searchQuery, setSearchQuery] = useState<string>('')
 
   const { pathname } = useLocation()
 
@@ -53,13 +56,14 @@ const Layout = ({
                     borderTopRightRadius: 0,
                     borderBottomRightRadius: 0
                   }}
-                  searchQuery={searchQuery}
-                  setSearchQuery={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+                  searchQuery={searchBarValue}
+                  setSearchQuery={(e: React.ChangeEvent<HTMLInputElement>) => setSearchBarValue(e.target.value)}
                 />
                 <ButtonComponent
+                  rateLimited={true}
                   config={{
                     type: 'submit',
-                    onClick: searchBarPrimaryAction?.bind(this, searchQuery)
+                    onClick: searchBarPrimaryAction?.bind(this, searchBarValue)
                   }}
                   customProps={{
                     variant: 'contained',

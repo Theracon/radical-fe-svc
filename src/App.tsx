@@ -1,16 +1,14 @@
 'use client'
 
-import { useSelector } from 'react-redux'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { ErrorBoundary } from 'react-error-boundary'
 
 import { flex } from './utils/display'
 import { Box, Typography } from '@mui/material'
-import { RootState } from './store'
 import UnprotectedRoutes from './routes/unprotected'
 import ProtectedRoutes from './routes/protected'
 import Logo from './assets/images/logo.svg'
-import BackdropComponent from './components/molecules/Backdrop'
+
 import './App.css'
 
 const Fallback = ({ error }: { error: Error }): JSX.Element => {
@@ -30,8 +28,6 @@ const logError = () => {
 }
 
 function App() {
-  const { loading } = useSelector((state: RootState) => state.app)
-
   return (
     <ErrorBoundary
       FallbackComponent={Fallback}
@@ -43,8 +39,6 @@ function App() {
         <UnprotectedRoutes />
         <ProtectedRoutes />
       </Router>
-
-      <BackdropComponent config={{ open: loading }} customProps={{ hasSpinner: true }} />
     </ErrorBoundary>
   )
 }

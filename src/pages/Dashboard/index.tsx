@@ -1,6 +1,7 @@
-import React, { useLayoutEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box, Grid, Typography } from '@mui/material'
 import { West } from '@mui/icons-material'
+import { useDispatch } from 'react-redux'
 
 import Layout from '@/containers/Layout'
 import BookList from '@/containers/BookList'
@@ -16,26 +17,71 @@ import NYTBooksR from '@/assets/images/nyt-books-3.svg'
 import FavBooksL from '@/assets/images/fav-books-1.svg'
 import FavBooksM from '@/assets/images/fav-books-2.svg'
 import FavBooksR from '@/assets/images/fav-books-3.svg'
+import { useApi } from '@/hooks/useApi'
+import { setLoading } from '@/store/app/appSlice'
+import { setBooks, setPageNumber } from '@/store/book/bookSlice'
+import { Book } from '@/types/book'
 
 const Dashboard = (): JSX.Element => {
-  const pagination = usePagination()
+  const { data, currentPage, handlePageChange, totalCount, totalPages } = usePagination()
+  const { handleMakeHttpRequest } = useApi()
 
-  const PAGE_HEADING = 'New York Times Bestsellers'
+  const OPTIONAL_PAGE_HEADING = 'New York Times Bestsellers'
 
-  const [heading, setHeading] = useState<string>('')
+  const dispatch = useDispatch()
+
   const [tab, setTab] = useState<DISPLAY>('DEFAULT')
+  const [heading, setHeading] = useState<string>('')
+  const [listOfBooks, setListOfBooks] = useState<Book[]>(data)
+  const [searchBarValue, setSearchBarValue] = useState<string>('')
+  const [lastSearchQuery, setLastSearchQuery] = useState<string>('')
 
-  const handleSwitchTabs = () => {
-    setHeading((current) => (current === '' ? PAGE_HEADING : ''))
+  const handleFetchBooks = async () => {
+    setHeading(OPTIONAL_PAGE_HEADING)
+    setSearchBarValue('')
+    setTab('VARIANT')
+    dispatch(setLoading(true))
+    const res = await handleMakeHttpRequest('get-books')
+    dispatch(setBooks(res || []))
+    dispatch(setPageNumber(1))
+    dispatch(setLoading(false))
+  }
+
+  const handleInitializeDashboard = async () => {
+    setTab('DEFAULT')
+    setHeading('')
+    setListOfBooks([])
+    setSearchBarValue('')
+    setLastSearchQuery('')
+  }
+
+  const handleSwitchTabs = async () => {
+    setSearchBarValue('')
+    setLastSearchQuery('')
+    setHeading((current) => (current === '' ? OPTIONAL_PAGE_HEADING : ''))
     setTab((current) => (current === 'DEFAULT' ? 'VARIANT' : 'DEFAULT'))
   }
 
-  const defaultTab = (
+  const handleBookSearch = async (searchQuery: string) => {
+    if (!searchQuery || searchQuery === lastSearchQuery) return
+
+    setTab('VARIANT')
+    setLastSearchQuery(searchQuery)
+    dispatch(setLoading(true))
+    const res = await handleMakeHttpRequest('get-books-w-query', searchQuery)
+    dispatch(setBooks(res || []))
+    dispatch(setPageNumber(1))
+    dispatch(setLoading(false))
+  }
+
+  const DefaultTabDisplay = (
     <React.Fragment>
       <ButtonComponent
-        config={{ onClick: handleSwitchTabs }}
+        config={{
+          onClick: handleFetchBooks
+        }}
         customProps={{ type: 'link', linkTo: routes.dashboard, customClasses: 'button__link' }}>
-        {PAGE_HEADING}
+        {OPTIONAL_PAGE_HEADING}
       </ButtonComponent>
       <Grid container spacing={2}>
         <Grid item xs={12} md={4}>
@@ -65,16 +111,17 @@ const Dashboard = (): JSX.Element => {
     </React.Fragment>
   )
 
-  const booksTab = (
-    <React.Fragment>
+  const BooksTabDisplay = (
+    <Box sx={{ minHeight: '50vh' }}>
       <BookList
-        bookList={pagination.data}
+        key={data.length}
+        bookList={listOfBooks}
         props={{
           variant: 'books',
-          currentPage: pagination.currentPage,
-          onPageChange: pagination.handlePageChange,
-          totalCount: pagination.totalCount,
-          totalPages: pagination.totalPages
+          currentPage: currentPage,
+          onPageChange: handlePageChange,
+          totalCount: totalCount,
+          totalPages: totalPages
         }}
       />
       <Box gap={0.5} sx={{ ...flex('row', 'flex-start') }}>
@@ -89,17 +136,32 @@ const Dashboard = (): JSX.Element => {
           Dashboard
         </ButtonComponent>
       </Box>
-    </React.Fragment>
+    </Box>
   )
 
-  useLayoutEffect(() => {
-    setHeading('')
-    setTab('DEFAULT')
+  let Display = undefined
+
+  if (tab === 'VARIANT') {
+    Display = BooksTabDisplay
+  } else {
+    Display = DefaultTabDisplay
+  }
+
+  useEffect(() => {
+    handleInitializeDashboard()
   }, [])
 
+  useEffect(() => {
+    setListOfBooks(data)
+  }, [data])
+
   return (
-    <Layout pageHeading={heading}>
-      <Box>{tab === 'DEFAULT' ? defaultTab : booksTab}</Box>
+    <Layout
+      pageHeading={heading}
+      searchBarValue={searchBarValue}
+      setSearchBarValue={setSearchBarValue}
+      searchBarPrimaryAction={handleBookSearch}>
+      {Display}
     </Layout>
   )
 }
