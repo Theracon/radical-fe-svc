@@ -36,9 +36,9 @@ const BookList = ({ bookList, props }: { bookList: IFavourite[]; props?: BookLis
             book={book}
             variant={props?.variant}
             props={{
+              likeFunction: props?.likeFunction,
               updateFunction: props?.updateFunction,
-              deleteFunction: props?.deleteFunction,
-              likeFunction: props?.likeFunction
+              deleteFunction: props?.deleteFunction
             }}
           />
         ))}

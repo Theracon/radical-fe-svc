@@ -4,14 +4,17 @@ import Dashboard from '@/pages/Dashboard'
 import Favourites from '@/pages/Favourites'
 import Settings from '@/pages/Settings'
 import { routes } from '@/constants'
+import { tokenExpired } from '@/utils/date'
 
 const ProtectedRoutes = () => {
   const location = useLocation()
-  const user = {
-    isLoggedIn: true
+  const accessToken = localStorage.getItem('accessToken')
+
+  if (!accessToken) {
+    return <Navigate to={routes.login} state={{ from: location }} replace />
   }
 
-  if (!user.isLoggedIn) {
+  if (tokenExpired(accessToken)) {
     return <Navigate to={routes.login} state={{ from: location }} replace />
   }
 

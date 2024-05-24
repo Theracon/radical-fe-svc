@@ -18,7 +18,6 @@ const FormComponent = ({
     if (config?.onSubmit) {
       const request = customProps?.httpRequestConfig
       console.log(request?.data)
-      alert('submitted!')
       config.onSubmit(e)
     }
   }

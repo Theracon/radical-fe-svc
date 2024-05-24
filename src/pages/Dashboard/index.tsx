@@ -19,7 +19,7 @@ import FavBooksM from '@/assets/images/fav-books-2.svg'
 import FavBooksR from '@/assets/images/fav-books-3.svg'
 import { useApi } from '@/hooks/useApi'
 import { setLoading } from '@/store/app/appSlice'
-import { setBooks, setPageNumber } from '@/store/book/bookSlice'
+import { setBooks, setFavourites, setPageNumber } from '@/store/book/bookSlice'
 import { Book } from '@/types/book'
 
 const Dashboard = (): JSX.Element => {
@@ -36,17 +36,6 @@ const Dashboard = (): JSX.Element => {
   const [searchBarValue, setSearchBarValue] = useState<string>('')
   const [lastSearchQuery, setLastSearchQuery] = useState<string>('')
 
-  const handleFetchBooks = async () => {
-    setHeading(OPTIONAL_PAGE_HEADING)
-    setSearchBarValue('')
-    setTab('VARIANT')
-    dispatch(setLoading(true))
-    const res = await handleMakeHttpRequest('get-books')
-    dispatch(setBooks(res || []))
-    dispatch(setPageNumber(1))
-    dispatch(setLoading(false))
-  }
-
   const handleInitializeDashboard = async () => {
     setTab('DEFAULT')
     setHeading('')
@@ -62,16 +51,41 @@ const Dashboard = (): JSX.Element => {
     setTab((current) => (current === 'DEFAULT' ? 'VARIANT' : 'DEFAULT'))
   }
 
-  const handleBookSearch = async (searchQuery: string) => {
-    if (!searchQuery || searchQuery === lastSearchQuery) return
+  const handleFetchBooks = async () => {
+    try {
+      setHeading(OPTIONAL_PAGE_HEADING)
+      setSearchBarValue('')
+      setTab('VARIANT')
+      dispatch(setLoading(true))
+      const res = await handleMakeHttpRequest('get-books', undefined, true)
+      dispatch(setBooks(res || []))
+      dispatch(setPageNumber(1))
+      dispatch(setLoading(false))
+    } catch (error) {
+      dispatch(setLoading(false))
+    }
+  }
 
-    setTab('VARIANT')
-    setLastSearchQuery(searchQuery)
-    dispatch(setLoading(true))
-    const res = await handleMakeHttpRequest('get-books-w-query', searchQuery)
-    dispatch(setBooks(res || []))
-    dispatch(setPageNumber(1))
-    dispatch(setLoading(false))
+  const handleBookSearch = async (searchQuery: string) => {
+    try {
+      if (!searchQuery || searchQuery === lastSearchQuery) return
+
+      setTab('VARIANT')
+      setLastSearchQuery(searchQuery)
+      dispatch(setLoading(true))
+      const res = await handleMakeHttpRequest('get-books-w-query', searchQuery, true)
+      dispatch(setBooks(res || []))
+      dispatch(setPageNumber(1))
+      dispatch(setLoading(false))
+    } catch (error) {
+      dispatch(setLoading(false))
+    }
+  }
+
+  const handleAddFavourite = async ({ title, author, price }: Book) => {
+    const data = { title, author, price, rating: 0 }
+    const res = await handleMakeHttpRequest('add-favourite', undefined, false, data)
+    dispatch(setFavourites(res))
   }
 
   const DefaultTabDisplay = (
@@ -121,7 +135,8 @@ const Dashboard = (): JSX.Element => {
           currentPage: currentPage,
           onPageChange: handlePageChange,
           totalCount: totalCount,
-          totalPages: totalPages
+          totalPages: totalPages,
+          likeFunction: handleAddFavourite
         }}
       />
       <Box gap={0.5} sx={{ ...flex('row', 'flex-start') }}>

@@ -7,6 +7,7 @@ import SideBarComponent from '@/components/molecules/SideBar'
 import SearchBarComponent from '@/components/molecules/SearchBar'
 import { flex } from '@/utils/display'
 import ButtonComponent from '@/components/atoms/Button'
+import { authRoutes } from '@/constants'
 
 const Layout = ({
   pageHeading = '',
@@ -18,37 +19,42 @@ const Layout = ({
 }: {
   pageHeading?: JSX.Element | string
   hasSearchBar?: boolean
-  searchBarValue: string
-  setSearchBarValue: Dispatch<SetStateAction<string>>
+  searchBarValue?: string
+  setSearchBarValue?: Dispatch<SetStateAction<string>> | undefined
   searchBarPrimaryAction?: (query: string) => any
   children?: JSX.Element | JSX.Element[]
 }): JSX.Element => {
   const [activeSidebarBtn, setActiveSidebarBtn] = useState<string>('')
 
   const { pathname } = useLocation()
+  const IS_AUTH_ROUTE = authRoutes.includes(pathname)
 
   useLayoutEffect(() => {
     setActiveSidebarBtn(pathname)
   }, [pathname])
 
   return (
-    <Stack position='relative'>
-      <NavBarComponent />
-      <SideBarComponent activeButton={activeSidebarBtn} />
+    <Stack position='relative' sx={IS_AUTH_ROUTE ? {} : flex()}>
+      {IS_AUTH_ROUTE && <NavBarComponent />}
+      {IS_AUTH_ROUTE && <SideBarComponent activeButton={activeSidebarBtn} />}
       <Box
-        position='absolute'
         py={5}
-        sx={{
-          top: { md: '8.18vh' },
-          left: { md: '5.63vw' },
-          width: { md: '94.37vw', height: { md: '91.82vh' } }
-        }}>
-        <Box width='100%'>
+        sx={
+          IS_AUTH_ROUTE
+            ? {
+                position: 'absolute',
+                top: { md: '8.18vh' },
+                left: { md: '5.63vw' },
+                width: { md: '94.37vw', height: { md: '91.82vh' } }
+              }
+            : {}
+        }>
+        <Box width='100%' sx={IS_AUTH_ROUTE ? {} : { ...flex() }}>
           <Grid container spacing={5} width='100%' sx={{ ...flex() }}>
             <Grid item xs={12} md={9}>
               <Typography sx={{ fontWeight: 700 }}>{pageHeading}</Typography>
             </Grid>
-            {hasSearchBar && (
+            {IS_AUTH_ROUTE && hasSearchBar && (
               <Grid item xs={12} md={9} sx={{ ...flex() }}>
                 <SearchBarComponent
                   customInputStyle={{
@@ -56,14 +62,14 @@ const Layout = ({
                     borderTopRightRadius: 0,
                     borderBottomRightRadius: 0
                   }}
-                  searchQuery={searchBarValue}
-                  setSearchQuery={(e: React.ChangeEvent<HTMLInputElement>) => setSearchBarValue(e.target.value)}
+                  searchQuery={searchBarValue!}
+                  setSearchQuery={(e: React.ChangeEvent<HTMLInputElement>) => setSearchBarValue!(e.target.value)}
                 />
                 <ButtonComponent
                   rateLimited={true}
                   config={{
                     type: 'submit',
-                    onClick: searchBarPrimaryAction?.bind(this, searchBarValue)
+                    onClick: searchBarPrimaryAction?.bind(this, searchBarValue!)
                   }}
                   customProps={{
                     variant: 'contained',
@@ -83,7 +89,7 @@ const Layout = ({
               </Grid>
             )}
             {children && (
-              <Grid item xs={12} md={9}>
+              <Grid item xs={12} md={IS_AUTH_ROUTE ? 9 : 12}>
                 {children}
               </Grid>
             )}

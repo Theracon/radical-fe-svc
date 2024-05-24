@@ -6,9 +6,7 @@ export type BookListProps = {
   totalPages: number
   updateFunction?: any
   deleteFunction?: any
-  likeFunction?: FormEventHandler<HTMLInputElement> &
-    ChangeEventHandler<HTMLInputElement> &
-    ((event: ChangeEvent<HTMLInputElement>, checked: boolean) => void)
+  likeFunction?: any
   currentPage?: number
   onPageChange?: (event: React.ChangeEvent<unknown>, value: number) => void
 }

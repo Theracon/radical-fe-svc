@@ -7,7 +7,6 @@ import Layout from '@/containers/Layout'
 import BookList from '@/containers/BookList'
 import { usePagination } from '@/hooks/usePagination'
 import { DISPLAY } from '@/types/page'
-import DialogComponent from '@/components/molecules/Dialog'
 import ImageComponent from '@/components/atoms/Image'
 import Library from '@/assets/images/library.svg'
 import FormComponent from '@/components/molecules/Form'
@@ -16,11 +15,14 @@ import { flex } from '@/utils/display'
 import ButtonComponent from '@/components/atoms/Button'
 import RatingComponent from '@/components/atoms/Rating'
 import { RootState } from '@/store'
-import { setCurrentBook } from '@/store/book/bookSlice'
+import { setCurrentBook, setFavourites } from '@/store/book/bookSlice'
 import { IFavourite } from '@/types/book'
+import { useApi } from '@/hooks/useApi'
 
 const Favourites = (): JSX.Element => {
-  const pagination = usePagination('favourites')
+  const { data, currentPage, handlePageChange, totalCount, totalPages, handleSearchByAuthorOrTitle } =
+    usePagination('favourites')
+  const { handleMakeHttpRequest } = useApi()
 
   const PAGE_HEADING = 'Favourites'
 
@@ -30,7 +32,6 @@ const Favourites = (): JSX.Element => {
   const [heading, setHeading] = useState<string>('')
   const [hasSearchBar, setHasSearchBar] = useState<boolean>(false)
   const [tab, setTab] = useState<DISPLAY>('DEFAULT')
-  const [showDialog, setShowDialog] = useState<boolean>(false)
   const [bookState, setBookState] = useState<IFavourite>(currentBook!)
   const [searchBarValue, setSearchBarValue] = useState<string>('')
 
@@ -52,45 +53,34 @@ const Favourites = (): JSX.Element => {
     handleSwitchTabs()
   }
 
-  const handleToggleDialog = (state: boolean): void => {
-    setShowDialog(state)
+  const handleRemoveFavourite = async (bookId: string | number) => {
+    const res = await handleMakeHttpRequest('delete-favourite', undefined, false, undefined, bookId)
+    dispath(setFavourites(res))
   }
 
-  const handleAddFavourite = () => {
-    alert('added')
-  }
-
-  const handleRemoveFavourite = () => {
-    handleToggleDialog(false)
-  }
-
-  const handleUpdateFavourite = () => {
-    alert(JSON.stringify(bookState))
+  const handleUpdateFavourite = async () => {
+    if (!bookState.price || !bookState.rating) return
+    const data = {
+      rating: bookState.rating,
+      price: bookState.price
+    }
+    const res = await handleMakeHttpRequest('update-favourite', undefined, false, data, bookState.id)
+    dispath(setFavourites(res))
+    handleSwitchTabs()
   }
 
   const defaultTab = (
     <React.Fragment>
       <BookList
-        bookList={pagination.data}
+        bookList={data}
         props={{
           variant: 'favourites',
-          currentPage: pagination.currentPage,
-          onPageChange: pagination.handlePageChange,
-          totalCount: pagination.totalCount,
-          totalPages: pagination.totalPages,
+          currentPage: currentPage,
+          onPageChange: handlePageChange,
+          totalCount: totalCount,
+          totalPages: totalPages,
           updateFunction: handleSetCurrentBook,
-          deleteFunction: handleToggleDialog.bind(this, true),
-          likeFunction: handleAddFavourite
-        }}
-      />
-      <DialogComponent
-        config={{ open: showDialog }}
-        customProps={{
-          size: 'sm',
-          title: 'Confirm',
-          content: 'Are you sure you want to proceed?',
-          primaryAction: handleRemoveFavourite,
-          secondaryAction: handleToggleDialog.bind(this, false)
+          deleteFunction: handleRemoveFavourite
         }}
       />
     </React.Fragment>
@@ -198,6 +188,7 @@ const Favourites = (): JSX.Element => {
     setHeading(PAGE_HEADING)
     setHasSearchBar(true)
     setTab('DEFAULT')
+    handleMakeHttpRequest('get-favourites')
   }, [])
 
   useEffect(() => {
@@ -210,7 +201,7 @@ const Favourites = (): JSX.Element => {
       hasSearchBar={hasSearchBar}
       searchBarValue={searchBarValue}
       setSearchBarValue={setSearchBarValue}
-      searchBarPrimaryAction={pagination.handleSearchByAuthorOrTitle}>
+      searchBarPrimaryAction={handleSearchByAuthorOrTitle}>
       <Box>{tab === 'DEFAULT' ? defaultTab : currentBookTab}</Box>
     </Layout>
   )

@@ -1,4 +1,5 @@
 import { Box, Grid, Typography } from '@mui/material'
+import { Favorite, FavoriteBorder } from '@mui/icons-material'
 
 import { BookProps, IFavourite } from '@/types/book'
 import ImageComponent from '@/components/atoms/Image'
@@ -8,7 +9,6 @@ import RatingComponent from '@/components/atoms/Rating'
 import { flex } from '@/utils/display'
 import ButtonComponent from '@/components/atoms/Button'
 import InputComponent from '@/components/atoms/Input'
-import { Favorite, FavoriteBorder } from '@mui/icons-material'
 
 const BookComponent = ({
   book,
@@ -42,12 +42,12 @@ const BookComponent = ({
           </Typography>
         </Grid>
         <Grid item xs={3} sx={{ ...flex(variant === 'favourites' ? 'row' : 'row-reverse') }}>
-          <Grid item xs={3}>
-            <Typography variant='body2' textTransform='uppercase' sx={{ fontWeight: 700 }}>
-              {book.price}
+          <Grid item xs={4.5} sx={{ overflowX: 'auto' }}>
+            <Typography variant='body2' textTransform='uppercase' sx={{ fontWeight: 700, fontSize: '12px' }}>
+              {`${book.price} GBP`}
             </Typography>
           </Grid>
-          <Grid item xs={9}>
+          <Grid item xs={7.5}>
             <RatingComponent config={{ readOnly: true, value: book?.rating }} />
           </Grid>
         </Grid>
@@ -66,7 +66,7 @@ const BookComponent = ({
         {variant === 'favourites' && (
           <Grid item xs={1}>
             <ButtonComponent
-              config={{ onClick: props?.deleteFunction }}
+              config={{ onClick: props?.deleteFunction.bind(this, book.id) }}
               customProps={{
                 customContainerStyle: buttonSx,
                 customBtnStyle: buttonSx
@@ -77,7 +77,12 @@ const BookComponent = ({
         )}
         <Grid item xs={1}>
           <InputComponent
-            config={{ checked: variant === 'favourites', onChange: props?.likeFunction }}
+            config={{
+              checked: variant === 'favourites',
+              onChange: (_) => {
+                if (props?.likeFunction) props?.likeFunction(book)
+              }
+            }}
             customProps={{ type: 'checkbox', icon: <FavoriteBorder />, checkedIcon: <Favorite /> }}
           />
         </Grid>

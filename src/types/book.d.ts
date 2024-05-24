@@ -10,9 +10,7 @@ export type Book = {
 export type BookProps = {
   updateFunction?: any
   deleteFunction?: any
-  likeFunction?: FormEventHandler<HTMLInputElement> &
-    ChangeEventHandler<HTMLInputElement> &
-    ((event: ChangeEvent<HTMLInputElement>, checked: boolean) => void)
+  likeFunction?: any
 }
 
 export interface IFavourite extends Book {

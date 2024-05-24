@@ -12,7 +12,7 @@ const ButtonComponent = ({
   config,
   customProps = {},
   children,
-  rateLimited
+  rateLimited = false
 }: {
   config?: ButtonProps & LinkProps
   customProps?: CustomButtonConfig

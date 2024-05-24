@@ -1,7 +1,7 @@
-'use client'
-
+import { useEffect } from 'react'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { ErrorBoundary } from 'react-error-boundary'
+import { useDispatch } from 'react-redux'
 
 import { flex } from './utils/display'
 import { Box, Typography } from '@mui/material'
@@ -10,6 +10,7 @@ import ProtectedRoutes from './routes/protected'
 import Logo from './assets/images/logo.svg'
 
 import './App.css'
+import { setUserIsLoggedIn } from './store/user/userSlice'
 
 const Fallback = ({ error }: { error: Error }): JSX.Element => {
   console.error(`An error occurred: ${error.message}`)
@@ -24,10 +25,22 @@ const Fallback = ({ error }: { error: Error }): JSX.Element => {
   )
 }
 const logError = () => {
-  console.error('<Application Error>: An unexpected error occurred.')
+  console.error('An unexpected error occurred.')
 }
 
 function App() {
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem('accessToken')
+
+    if (accessToken) {
+      dispatch(setUserIsLoggedIn(true))
+    } else {
+      dispatch(setUserIsLoggedIn(false))
+    }
+  }, [])
+
   return (
     <ErrorBoundary
       FallbackComponent={Fallback}

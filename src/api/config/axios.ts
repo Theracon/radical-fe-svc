@@ -1,13 +1,15 @@
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 
-const AUTH_TOKEN = ''
+let token = JSON.stringify(localStorage.getItem('accessToken'))
+token = token.replace(/"/g, '')
+token = 'Bearer ' + token
 
 const instance = axios.create({
   baseURL: '',
   timeout: 10000
 })
 
-instance.defaults.headers.common['Authorization'] = AUTH_TOKEN
+instance.defaults.headers.common['Authorization'] = token
 instance.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 
 instance.interceptors.request.use(

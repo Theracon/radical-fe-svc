@@ -10,6 +10,8 @@ export const routes = {
   settings: '/settings'
 }
 
+export const authRoutes = [routes.dashboard, routes.favourites, routes.settings]
+
 export const theme = {
   colors: {
     primary: '#93B4BC',

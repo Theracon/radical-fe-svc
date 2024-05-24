@@ -91,8 +91,7 @@ export const usePagination = (dataType?: 'favourites') => {
   }, [bookList])
 
   useEffect(() => {
-    const dataList: Book[] | IFavourite[] = dataType === 'favourites' ? favouriteList : bookList
-    setAllBooks(dataList)
+    setAllBooks(favouriteList)
     handleFetchFavouritesByPage()
   }, [favouriteList])
 

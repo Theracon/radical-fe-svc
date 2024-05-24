@@ -1,4 +1,8 @@
+import { User } from './user'
+
 export type ActionType =
+  | 'login'
+  | 'register'
   | 'get-books'
   | 'get-books-w-query'
   | 'get-favourites'
@@ -11,4 +15,9 @@ enum Methods {
   POST = 'POST',
   PUT = 'PUT',
   DELETE = 'DELETE'
+}
+
+export type AuthResponse = {
+  token: string
+  user: User
 }
